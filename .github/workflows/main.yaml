@@ -2,21 +2,21 @@ name: main
 
 on:
   push:
-    branches: [ tii_build_scripts_v1.2.1 ]
+    branches: [ tii_build_scripts_humble_v1.2.1 ]
 
 jobs:
   tii-deb-build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        ros2_distro: [ galactic ]
+        ros2_distro: [ humble ]
     steps:
 
       - name: Checkout foonathan_memory_vendor
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           path: foonathan_memory_vendor
-          ref: tii_build_scripts_v1.2.1
+          ref: tii_build_scripts_humble_v1.2.1
 
       # Run docker build
       - name: Run foonathan_memory_vendor docker build
@@ -31,14 +31,14 @@ jobs:
           ./build.sh ../bin/
           popd
 
-      - uses: jfrog/setup-jfrog-cli@v2
+      - uses: jfrog/setup-jfrog-cli@v3
         env:
-          JF_ARTIFACTORY_1: ${{ secrets.ARTIFACTORY_TOKEN }}
+          JF_ENV_1: ${{ secrets.ARTIFACTORY_TOKEN }}
 
       - name: Upload to Artifactory
         env:
           ARTIFACTORY_REPO: debian-public-local
-          DISTRIBUTION: focal
+          DISTRIBUTION: jammy
           COMPONENT: fog-sw-sros
           ARCHITECTURE: amd64
           BUILD_NAME: foonathan-memory-vendor
